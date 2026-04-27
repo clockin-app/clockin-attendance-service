@@ -2,7 +2,6 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { resolve } from 'path';
 import { AppModule } from './app.module.js';
 
 async function bootstrap() {
@@ -10,9 +9,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
-  const uploadPath = resolve(process.env.UPLOAD_PATH ?? './uploads');
-  app.useStaticAssets(uploadPath, { prefix: '/uploads' });
 
   const config = new DocumentBuilder()
     .setTitle('ClockIn — Attendance Service')

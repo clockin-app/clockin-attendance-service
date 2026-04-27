@@ -15,6 +15,7 @@ import {
 } from '../entities/attendance-photo.entity.js';
 import { CheckInDto } from '../dto/check-in.dto.js';
 import { CheckOutDto } from '../dto/check-out.dto.js';
+import { CloudinaryService } from './cloudinary.service.js';
 
 @Injectable()
 export class AttendanceService {
@@ -23,6 +24,7 @@ export class AttendanceService {
     private readonly recordRepo: Repository<AttendanceRecord>,
     @InjectRepository(AttendancePhoto)
     private readonly photoRepo: Repository<AttendancePhoto>,
+    private readonly cloudinary: CloudinaryService,
   ) {}
 
   async checkIn(
@@ -50,9 +52,10 @@ export class AttendanceService {
     await this.recordRepo.save(record);
 
     if (file) {
+      const photoUrl = await this.cloudinary.uploadPhoto(file);
       const photo = this.photoRepo.create({
         attendance_id: record.id,
-        photo_url: `uploads/${file.filename}`,
+        photo_url: photoUrl,
         photo_type: PhotoType.CHECK_IN,
       });
       await this.photoRepo.save(photo);
@@ -87,9 +90,10 @@ export class AttendanceService {
     await this.recordRepo.save(record);
 
     if (file) {
+      const photoUrl = await this.cloudinary.uploadPhoto(file);
       const photo = this.photoRepo.create({
         attendance_id: record.id,
-        photo_url: `uploads/${file.filename}`,
+        photo_url: photoUrl,
         photo_type: PhotoType.CHECK_OUT,
       });
       await this.photoRepo.save(photo);
